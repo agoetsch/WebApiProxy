@@ -47,6 +47,7 @@
     <Compile Include="Models\ModelDefinitionEqualityComparer.cs" />
     <Compile Include="Models\ModelProperty.cs" />
     <Compile Include="Models\ParameterDefinition.cs" />
+    <Compile Include="NameForProxy.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

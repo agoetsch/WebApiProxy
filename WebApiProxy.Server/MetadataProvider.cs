@@ -43,7 +43,7 @@ namespace WebApiProxy.Server
                               where !d.Key.ControllerType.IsExcluded()
                               select new ControllerDefinition
                               {
-                                  Name = d.Key.ControllerName,
+                                  Name = d.Key.ControllerType.GetControllerNameForProxyIfExists() ?? d.Key.ControllerName,
                                   Description = documentationProvider == null ? "" : documentationProvider.GetDocumentation(d.Key) ?? "",
                                   ActionMethods = from a in descriptions
                                                   where !a.ActionDescriptor.ControllerDescriptor.ControllerType.IsExcluded()
