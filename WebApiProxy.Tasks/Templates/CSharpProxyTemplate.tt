@@ -160,16 +160,40 @@ namespace <#= Configuration.Namespace#>.Clients
 		/// </summary>
 		public HttpClient HttpClient { get; protected set; }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ClientBase"/> class.
-		/// </summary>
-		protected ClientBase()
-		{
-			HttpClient = new HttpClient()
-			{
-				BaseAddress = new Uri(Configuration.<#= Configuration.Name #>BaseAddress)
-			};
-		}
+        protected ClientBase(string baseUrl)
+            : this(baseUrl, null, null)
+        {
+            
+        }
+
+        protected ClientBase(string baseUrl, TimeSpan timeout)
+            : this(baseUrl, null, null, timeout)
+        {
+
+        }
+
+        protected ClientBase(string baseUrl, string username, string password)
+            : this(baseUrl, username, password, TimeSpan.FromSeconds(30))
+        {
+
+        }
+
+        protected ClientBase(string baseUrl, string username, string password, TimeSpan timeout)
+        {
+            HttpClient = new HttpClient();
+            HttpClient.BaseAddress = new Uri(baseUrl);
+            HttpClient.Timeout = timeout;
+
+            if(!string.IsNullOrEmpty(username))
+            {
+                HttpClient.DefaultRequestHeaders.Add("X-Avalara-Username", username);
+            }
+
+            if(!string.IsNullOrEmpty(password))
+            {
+                HttpClient.DefaultRequestHeaders.Add("X-Avalara-Password", password);
+            }
+        }
 
 		public virtual void EnsureSuccess(HttpResponseMessage response)
 		{			
@@ -211,7 +235,28 @@ namespace <#= Configuration.Namespace#>.Clients
 		/// <summary>
 		/// <#= definition.Description.ToSummary() #>
 		/// </summary>
-		public <#=definition.Name#><#= Configuration.ClientSuffix#>() : base()
+		public <#=definition.Name#><#= Configuration.ClientSuffix#>(string baseUrl) : base(baseUrl)
+		{
+		}
+
+        /// <summary>
+		/// <#= definition.Description.ToSummary() #>
+		/// </summary>
+		public <#=definition.Name#><#= Configuration.ClientSuffix#>(string baseUrl, TimeSpan timeout) : base(baseUrl, timeout)
+		{
+		}
+
+        /// <summary>
+		/// <#= definition.Description.ToSummary() #>
+		/// </summary>
+		public <#=definition.Name#><#= Configuration.ClientSuffix#>(string baseUrl, string username, string password) : base(baseUrl, username, password)
+		{
+		}
+
+        /// <summary>
+		/// <#= definition.Description.ToSummary() #>
+		/// </summary>
+		public <#=definition.Name#><#= Configuration.ClientSuffix#>(string baseUrl, string username, string password, TimeSpan timeout) : base(baseUrl, username, password, timeout)
 		{
 		}
 
