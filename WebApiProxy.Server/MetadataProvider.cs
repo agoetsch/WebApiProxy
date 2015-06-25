@@ -19,7 +19,6 @@ namespace WebApiProxy.Server
 
         public MetadataProvider(HttpConfiguration config)
         {
-            
             this.models = new List<ModelDefinition>();
             this.typesToIgnore = new List<string>();
             this.config = config;
@@ -116,7 +115,7 @@ namespace WebApiProxy.Server
                 {
                     res = type.Name;
 
-                        AddModelDefinition(type);
+                    AddModelDefinition(type);
                 }
             }
 
@@ -178,6 +177,7 @@ namespace WebApiProxy.Server
                 {
                     model.Name = GetGenericRepresentation(classToDef, (t) => model.AddGenericArgument(t.Name), model);
                 }
+
                 model.Type = classToDef.IsEnum ? "enum" : "class";
                 var constants = classToDef
                     .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
@@ -193,13 +193,36 @@ namespace WebApiProxy.Server
                                   };
 
                 var properties = classToDef.GetProperties();
-                model.Properties = from property in properties
-                                   select new ModelProperty
-                                   {
-                                       Name = property.Name,
-                                       Type = ParseType(property.PropertyType, model),
-                                       Description = GetDescription(property)
-                                   };
+                if(!classToDef.IsGenericType)
+                {
+                    model.Properties = from property in properties
+                                        select new ModelProperty
+                                        {
+                                            Name = property.Name,
+                                            Type = ParseType(property.PropertyType, model),
+                                            Description = GetDescription(property)
+                                        };
+                }
+                else 
+                {
+                    PropertyInfo[] typeProperties = classToDef.GetProperties();
+                    PropertyInfo[] genericProperties = classToDef.GetGenericTypeDefinition().GetProperties();
+
+                    // left join - use the generic property when name is matched
+                    properties = (from left in typeProperties
+	                    join right in genericProperties on left.Name equals right.Name into jn
+	                    from res in jn.DefaultIfEmpty()
+	                    select res ?? left).ToArray();
+
+                    model.Properties = from property in properties
+                                       select new ModelProperty
+                                       {
+                                           Name = property.Name,
+                                           Type = ParseType(property.PropertyType, model),
+                                           Description = GetDescription(property)
+                                       };
+                }
+
                 AddTypeToIgnore(model.Name);
                 foreach (var p in properties)
                 {

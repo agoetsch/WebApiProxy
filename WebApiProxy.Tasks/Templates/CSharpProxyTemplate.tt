@@ -10,12 +10,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Net.Http.Formatting;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Web;
 using <#= Configuration.Namespace#>.Models;
 
@@ -183,16 +185,7 @@ namespace <#= Configuration.Namespace#>.Clients
             HttpClient = new HttpClient();
             HttpClient.BaseAddress = new Uri(baseUrl);
             HttpClient.Timeout = timeout;
-
-            if(!string.IsNullOrEmpty(username))
-            {
-                HttpClient.DefaultRequestHeaders.Add("X-Avalara-Username", username);
-            }
-
-            if(!string.IsNullOrEmpty(password))
-            {
-                HttpClient.DefaultRequestHeaders.Add("X-Avalara-Password", password);
-            }
+            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Format("{0}:{1}", username, password))));            
         }
 
 		public virtual void EnsureSuccess(HttpResponseMessage response)

@@ -28,7 +28,16 @@ namespace WebApiProxy.Core.Models
         #region Methods
         public string AddGenericArgument(string argument)
         {
-            var result = System.String.Format(System.Globalization.CultureInfo.InvariantCulture, "T{0}", GenericArgumentsMap.Count + 1);
+            string result;
+            if(GenericArgumentsMap.Count == 0)
+            {
+                result = System.String.Format(System.Globalization.CultureInfo.InvariantCulture, "T");
+            }
+            else
+            {
+                result = System.String.Format(System.Globalization.CultureInfo.InvariantCulture, "T{0}", GenericArgumentsMap.Count + 1);    
+            }
+                        
             GenericArgumentsMap.Add(argument, result);
             return result;
         }
