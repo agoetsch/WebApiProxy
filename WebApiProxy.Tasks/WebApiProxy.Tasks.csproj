@@ -71,6 +71,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="init.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

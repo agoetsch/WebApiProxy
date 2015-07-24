@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Description;
+using WebApiProxy.Core;
 using WebApiProxy.Core.Models;
 
 namespace WebApiProxy.Server
@@ -29,6 +30,12 @@ namespace WebApiProxy.Server
             var host = request.RequestUri.Scheme + "://" + request.RequestUri.Authority;
             var descriptions = config.Services.GetApiExplorer().ApiDescriptions;
             var documentationProvider = config.Services.GetDocumentationProvider();
+            var otherModels = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Where(x => x.GetCustomAttribute<IncludeProxy>() != null);
+
+            foreach(Type type in otherModels)
+            {
+                ParseType(type);
+            }
 
             ILookup<HttpControllerDescriptor, ApiDescription> apiGroups = descriptions
                 .Where(a => !a.ActionDescriptor.ControllerDescriptor.ControllerType.IsAbstract
